@@ -16,9 +16,9 @@ export default function Footer() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "flex-end" }}>
             {[
-              { label: "X / Twitter", href: "https://x.com" },
-              { label: "GitHub", href: "https://github.com" },
-              { label: "LinkedIn", href: "https://linkedin.com" },
+              { label: "X / Twitter", href: "https://x.com/AwodeleFelix2" },
+              { label: "GitHub", href: "https://github.com/felixrex82" },
+              { label: "LinkedIn", href: "https://www.linkedin.com/in/awodele-felix-1651021b2/" },
             ].map(({ label, href }) => (
               <a key={href} href={href} target="_blank" rel="noopener noreferrer"
                 style={{ fontSize: "0.8rem", color: "var(--muted)", transition: "color 0.15s" }}
