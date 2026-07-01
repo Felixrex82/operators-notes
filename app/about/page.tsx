@@ -32,7 +32,7 @@ export default function AboutPage() {
                 ABOUT
               </p>
               <h1 style={{ fontSize: "2rem", fontWeight: 700, color: "var(--primary)", letterSpacing: "-0.04em", marginBottom: "1.25rem" }}>
-                Felix
+                My Name Is Awodele Felix (Felixrex)
               </h1>
               <p style={{ fontSize: "1rem", color: "var(--secondary)", lineHeight: 1.8, marginBottom: "1rem" }}>
                 I&apos;m a startup operator, product thinker, and Web3 enthusiast. I spend most of my time 
