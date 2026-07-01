@@ -35,10 +35,10 @@ export default function ContactPage() {
   } as React.CSSProperties;
 
   const socials = [
-    { label: "X / Twitter", handle: "@felix", href: "https://x.com" },
-    { label: "GitHub", handle: "github.com/felix", href: "https://github.com" },
-    { label: "LinkedIn", handle: "linkedin.com/in/felix", href: "https://linkedin.com" },
-    { label: "Email", handle: "felix@operatorsnotes.com", href: "mailto:felix@operatorsnotes.com" },
+    { label: "X / Twitter", handle: "Awodelefelix2", href: "https://x.com/AwodeleFelix2" },
+    { label: "GitHub", handle: "Felixrex82", href: "https://github.com/felixrex82" },
+    { label: "LinkedIn", handle: "linkedin.com/in/felix", href: "https://www.linkedin.com/in/awodele-felix-1651021b2/" },
+    { label: "Email", handle: "felix@operatorsnotes.com", href: "olamidefelix82@gmail.com" },
   ];
 
   return (
