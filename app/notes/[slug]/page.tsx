@@ -2,6 +2,7 @@ import { getAllNotes, getNoteBySlug } from "@/lib/notes";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import NoteContent from "@/components/NoteContent";
+import ShareButton from "@/components/ShareButton";
 
 export async function generateStaticParams() {
   return getAllNotes().map(n => ({ slug: n.slug }));
@@ -11,7 +12,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const note = getNoteBySlug(slug);
   if (!note) return {};
-  return { title: note.title, description: note.excerpt };
+  return {
+    title: note.title,
+    description: note.excerpt,
+    openGraph: {
+      title: note.title,
+      description: note.excerpt,
+      type: "article",
+      publishedTime: note.date,
+    },
+    twitter: { card: "summary_large_image", title: note.title, description: note.excerpt },
+  };
 }
 
 export default async function NotePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -39,9 +50,9 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           </Link>
         </div>
 
-        {/* Article — max-width reading column, centred */}
         <article className="reading-col" style={{ paddingTop: "2.5rem" }}>
-          {/* Meta row */}
+
+          {/* Meta */}
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap" }}>
             <span className="tag-accent">{note.category.toUpperCase()}</span>
             <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: "0.67rem", color: "var(--muted)" }}>
@@ -54,18 +65,16 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           </div>
 
           <h1 style={{
-            fontSize: "clamp(1.5rem, 4vw, 2.1rem)",
-            fontWeight: 700, color: "var(--primary)",
-            letterSpacing: "-0.04em", lineHeight: 1.15,
-            marginBottom: "1.1rem",
+            fontSize: "clamp(1.5rem, 4vw, 2.1rem)", fontWeight: 700,
+            color: "var(--primary)", letterSpacing: "-0.04em",
+            lineHeight: 1.15, marginBottom: "1.1rem",
           }}>
             {note.title}
           </h1>
 
           <p style={{
-            fontSize: "clamp(0.95rem, 2vw, 1.05rem)",
-            color: "var(--secondary)", lineHeight: 1.75,
-            borderBottom: "1px solid var(--border)",
+            fontSize: "clamp(0.95rem, 2vw, 1.05rem)", color: "var(--secondary)",
+            lineHeight: 1.75, borderBottom: "1px solid var(--border)",
             paddingBottom: "2rem", marginBottom: "2.25rem",
           }}>
             {note.excerpt}
@@ -74,22 +83,29 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           {/* Body */}
           <NoteContent content={note.content} />
 
-          {/* Tags */}
-          {note.tags.length > 0 && (
-            <div style={{ marginTop: "2.5rem", paddingTop: "1.75rem", borderTop: "1px solid var(--border)", display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-              {note.tags.map(tag => (
-                <span key={tag} className="tag-muted">#{tag}</span>
-              ))}
-            </div>
-          )}
+          {/* Tags + Share */}
+          <div style={{
+            marginTop: "2.5rem", paddingTop: "1.75rem",
+            borderTop: "1px solid var(--border)",
+            display: "flex", justifyContent: "space-between",
+            alignItems: "flex-start", gap: "1rem", flexWrap: "wrap",
+          }}>
+            {note.tags.length > 0 ? (
+              <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                {note.tags.map(tag => (
+                  <span key={tag} className="tag-muted">#{tag}</span>
+                ))}
+              </div>
+            ) : <div />}
+
+            <ShareButton title={note.title} slug={slug} />
+          </div>
 
           {/* Prev / Next */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: prev && next ? "1fr 1fr" : "1fr",
-            gap: "1rem",
-            marginTop: "2.5rem",
-            paddingTop: "2rem",
+            gridTemplateColumns: prev && next ? "1fr 1fr" : prev ? "1fr" : "1fr",
+            gap: "1rem", marginTop: "2.5rem", paddingTop: "2rem",
             borderTop: "1px solid var(--border)",
           }}>
             {prev && (
@@ -99,12 +115,13 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
               </Link>
             )}
             {next && (
-              <Link href={`/notes/${next.slug}`} style={{ textDecoration: "none", textAlign: "right" }}>
+              <Link href={`/notes/${next.slug}`} style={{ textDecoration: "none", textAlign: prev ? "right" : "left" }}>
                 <p style={{ fontFamily: "'Geist Mono', monospace", fontSize: "0.63rem", color: "var(--muted)", marginBottom: "0.4rem" }}>NEXT →</p>
                 <p style={{ fontSize: "0.85rem", color: "var(--secondary)", lineHeight: 1.4 }}>{next.title}</p>
               </Link>
             )}
           </div>
+
         </article>
       </div>
     </div>
