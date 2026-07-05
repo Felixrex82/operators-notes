@@ -4,6 +4,7 @@ import Link from "next/link";
 import NoteContent from "@/components/NoteContent";
 import ShareButton from "@/components/ShareButton";
 import LikeButton from "@/components/LikeButton";
+import Subscribe from "@/components/Subscribe";
 
 export async function generateStaticParams() {
   return getAllNotes().map(n => ({ slug: n.slug }));
@@ -84,12 +85,11 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           {/* Body */}
           <NoteContent content={note.content} />
 
+          {/* Newsletter — right below article body */}
+          <Subscribe variant="inline" />
+
           {/* Tags + Like + Share */}
-          <div style={{
-            marginTop: "2.5rem", paddingTop: "1.75rem",
-            borderTop: "1px solid var(--border)",
-          }}>
-            {/* Tags */}
+          <div style={{ marginTop: "2rem", paddingTop: "1.75rem", borderTop: "1px solid var(--border)" }}>
             {note.tags.length > 0 && (
               <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
                 {note.tags.map(tag => (
@@ -97,14 +97,9 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
                 ))}
               </div>
             )}
-
-            {/* Like + Share row */}
             <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "0.75rem",
+              display: "flex", justifyContent: "space-between",
+              alignItems: "center", flexWrap: "wrap", gap: "0.75rem",
               paddingTop: note.tags.length > 0 ? "1rem" : "0",
               borderTop: note.tags.length > 0 ? "1px solid var(--border)" : "none",
             }}>
@@ -133,7 +128,6 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
               </Link>
             )}
           </div>
-
         </article>
       </div>
     </div>
