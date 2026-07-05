@@ -68,6 +68,19 @@ export default function AdminEdit() {
             }}>
               + New note
             </Link>
+            <Link href="/admin/analytics" style={{
+              padding: "0.6rem 1rem",
+              background: "transparent",
+              color: "var(--muted)",
+              border: "1px solid var(--border)",
+              borderRadius: "5px",
+              fontSize: "0.82rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.4rem",
+            }}>
+              📊 Analytics
+            </Link>
             <button onClick={logout} style={{
               padding: "0.6rem 1rem",
               background: "transparent",
