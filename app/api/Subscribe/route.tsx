@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const submissions = new Map<string, number>();
+const submissions = new Map<string, number>();    
 
 function rateLimit(ip: string) {
   const now = Date.now();
