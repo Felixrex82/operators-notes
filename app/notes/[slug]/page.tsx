@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import NoteContent from "@/components/NoteContent";
 import ShareButton from "@/components/ShareButton";
+import LikeButton from "@/components/LikeButton";
 
 export async function generateStaticParams() {
   return getAllNotes().map(n => ({ slug: n.slug }));
@@ -39,7 +40,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
     <div className="page-wrap">
       <div className="container" style={{ paddingBottom: "5rem" }}>
 
-        {/* Back link */}
+        {/* Back */}
         <div style={{ paddingTop: "1.75rem", paddingBottom: "1.5rem", borderBottom: "1px solid var(--border)" }}>
           <Link href="/notes" style={{
             fontFamily: "'Geist Mono', monospace", fontSize: "0.68rem",
@@ -83,28 +84,39 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           {/* Body */}
           <NoteContent content={note.content} />
 
-          {/* Tags + Share */}
+          {/* Tags + Like + Share */}
           <div style={{
             marginTop: "2.5rem", paddingTop: "1.75rem",
             borderTop: "1px solid var(--border)",
-            display: "flex", justifyContent: "space-between",
-            alignItems: "flex-start", gap: "1rem", flexWrap: "wrap",
           }}>
-            {note.tags.length > 0 ? (
-              <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+            {/* Tags */}
+            {note.tags.length > 0 && (
+              <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
                 {note.tags.map(tag => (
                   <span key={tag} className="tag-muted">#{tag}</span>
                 ))}
               </div>
-            ) : <div />}
+            )}
 
-            <ShareButton title={note.title} slug={slug} />
+            {/* Like + Share row */}
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "0.75rem",
+              paddingTop: note.tags.length > 0 ? "1rem" : "0",
+              borderTop: note.tags.length > 0 ? "1px solid var(--border)" : "none",
+            }}>
+              <LikeButton slug={slug} />
+              <ShareButton title={note.title} slug={slug} />
+            </div>
           </div>
 
           {/* Prev / Next */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: prev && next ? "1fr 1fr" : prev ? "1fr" : "1fr",
+            gridTemplateColumns: prev && next ? "1fr 1fr" : "1fr",
             gap: "1rem", marginTop: "2.5rem", paddingTop: "2rem",
             borderTop: "1px solid var(--border)",
           }}>
