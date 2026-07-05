@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import LinkDialog from "@/components/LinkDialog";
 
 const CATEGORIES = ["Startups","Products","Web3","Growth","Research","Essays","Systems","Execution"];
 
@@ -103,6 +104,8 @@ function EditorInner() {
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingEdit, setLoadingEdit] = useState(isEdit);
   const [uploading, setUploading] = useState(false);
+  const [linkDialog, setLinkDialog] = useState(false);
+  const [linkSelectedText, setLinkSelectedText] = useState("");
   const [uploadedImages, setUploadedImages] = useState<{url: string; name: string}[]>([]);
   const [showImagePanel, setShowImagePanel] = useState(false);
 
@@ -253,6 +256,7 @@ function EditorInner() {
   );
 
   return (
+    <>
     <div style={{paddingTop:"52px"}}>
       {/* ── Sticky top bar ── */}
       <div className="admin-topbar">
@@ -423,7 +427,11 @@ function EditorInner() {
                 <ToolBtn title="Inline code" onClick={()=>wrapSelection("`","`","code")}>
                   {"</>"}
                 </ToolBtn>
-                <ToolBtn title="Link" onClick={()=>wrapSelection("[","](url)","link text")}>
+                <ToolBtn title="Insert link (⌘K)" onClick={()=>{
+                  const ta = textareaRef.current;
+                  if (ta) setLinkSelectedText(body.slice(ta.selectionStart, ta.selectionEnd));
+                  setLinkDialog(true);
+                }}>
                   🔗
                 </ToolBtn>
                 <div style={{width:"1px",height:"16px",background:"var(--border)",margin:"0 0.25rem"}} />
@@ -485,6 +493,13 @@ function EditorInner() {
                 if ((e.metaKey||e.ctrlKey) && e.key==="b") { e.preventDefault(); wrapSelection("**","**","bold text"); }
                 // Italic shortcut
                 if ((e.metaKey||e.ctrlKey) && e.key==="i") { e.preventDefault(); wrapSelection("*","*","italic text"); }
+                // Link shortcut
+                if ((e.metaKey||e.ctrlKey) && e.key==="k") {
+                  e.preventDefault();
+                  const ta = textareaRef.current;
+                  setLinkSelectedText(ta ? body.slice(ta.selectionStart, ta.selectionEnd) : "");
+                  setLinkDialog(true);
+                }
               }}
               placeholder={`Write your note in Markdown...\n\n## Section heading\n\nYour content here. Use **bold**, *italic*, \`code\`.\n\n- Bullet point one\n- Bullet point two\n\n> A blockquote callout looks like this.`}
               style={{
@@ -530,7 +545,25 @@ function EditorInner() {
 
       </div>
     </div>
+    <LinkDialog
+      open={linkDialog}
+      selectedText={linkSelectedText}
+      onInsert={(markdown) => {
+        const ta = textareaRef.current;
+        if (ta) {
+          const start = ta.selectionStart;
+          const end = ta.selectionEnd;
+          setBody(b => b.slice(0, start) + markdown + b.slice(end));
+          setTimeout(() => { ta.focus(); ta.setSelectionRange(start + markdown.length, start + markdown.length); }, 0);
+        } else {
+          setBody(b => b + markdown);
+        }
+      }}
+      onClose={() => setLinkDialog(false)}
+    />
+    </>
   );
+
 }
 
 export default function NewNotePage() {
