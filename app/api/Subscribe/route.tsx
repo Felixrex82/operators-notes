@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     const ownerEmail = process.env.CONTACT_EMAIL;
     if (ownerEmail) {
       await resend.emails.send({
-        from: "The Operator's Notes <onboarding@resend.dev>",
+        from: "The Operator's Notes <olamidefelix54@gmail.com>",
         to: email,
         replyTo: ownerEmail,
         subject: "You're in, Operator.",
@@ -55,13 +55,13 @@ export async function POST(req: NextRequest) {
               <h1 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-0.03em">You're in, Operator.</h1>
             </div>
             <p style="font-size:15px;line-height:1.7;color:#333;margin-bottom:16px">
-              Welcome to the notes. You're now part of a small group of founders, builders, and operators who read these ideas as they develop.
+              Welcome to the notes. You're now part of a small group of founders, builders, thinkers and operators who read these ideas as they develop.
             </p>
             <p style="font-size:15px;line-height:1.7;color:#333;margin-bottom:16px">
-              Expect notes on startups, products, Web3, growth systems, and the craft of building things that matter. No noise. No fluff. Just the thinking.
+              Expect notes on startups, products, Web3, growth systems, personal development, critical thinking and the craft of building things that matter. No noise. No fluff. Just the thinking.
             </p>
             <p style="font-size:15px;line-height:1.7;color:#333;margin-bottom:32px">
-              — Felix
+              — Awodele Felix
             </p>
             <div style="border-top:1px solid #eee;padding-top:20px">
               <p style="font-size:12px;color:#999;margin:0">
