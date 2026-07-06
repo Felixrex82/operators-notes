@@ -12,26 +12,34 @@ export default function Subscribe({ variant = "inline" }: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [msg, setMsg] = useState("");
 
-  async function submit(e: React.FormEvent) {
+ async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
     setMsg("");
 
-    const res = await fetch("/api/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
 
-    if (res.ok) {
-      setStatus("success");
-      setMsg(data.existing ? "You're already an Operator." : "You're in. Welcome, Operator.");
-      setEmail("");
-    } else {
+      if (res.ok) {
+        setStatus("success");
+        setMsg(data.existing || data.alreadySubscribed
+          ? "You're already an Operator."
+          : "You're in. Welcome, Operator.");
+        setEmail("");
+      } else {
+        setStatus("error");
+        setMsg(data.error || "Something went wrong.");
+      }
+    } catch {
       setStatus("error");
-      setMsg(data.error || "Something went wrong.");
+      setMsg("Network error. Please try again.");
     }
+  }
   }
 
   // ── Strip variant (top of note pages) ──────────────────
