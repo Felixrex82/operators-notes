@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     const ownerEmail = process.env.CONTACT_EMAIL;
     if (ownerEmail) {
       await resend.emails.send({
-        from: "The Operator's Notes <olamidefelix54@gmail.com>",
+        from: "The Operator's Notes <onboarding@resend.dev>",
         to: email,
         replyTo: ownerEmail,
         subject: "You're in, Operator.",
