@@ -29,6 +29,7 @@ export default function Footer() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "flex-end" }}>
             {[
+              { label: "Whatsapp", href: "https://wa.me/qr/RQTA7MVPJYHQE1" },
               { label: "X / Twitter", href: "https://x.com/awodelefelix2" },
               { label: "GitHub", href: "https://github.com/Felixrex82" },
               { label: "LinkedIn", href: "https://linkedin.com" },
