@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 const socials = [
+  { label: "Whatsapp", handle: "+2348173857159", href: "https://wa.me/qr/RQTA7MVPJYHQE1" },
   { label: "X / Twitter", handle: "@Awodelefelix2", href: "https://x.com/awodelefelix2" },
   { label: "GitHub", handle: "github.com/Felixrex82", href: "https://github.com/Felixrex82" },
   { label: "LinkedIn", handle: "linkedin.com/in/felix", href: "https://linkedin.com" },
