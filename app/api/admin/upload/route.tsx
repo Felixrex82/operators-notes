@@ -54,6 +54,11 @@ export async function POST(req: NextRequest) {
     const err = await res.json();
     return NextResponse.json({ error: err.message || "Upload failed" }, { status: 500 });
   }
+// Trigger Vercel redeploy so the new image is served immediately
+  const deployHook = process.env.VERCEL_DEPLOY_HOOK;
+  if (deployHook) {
+    fetch(deployHook, { method: "POST" }).catch(() => {});
+  }
 
   // Return the public URL — Next.js serves /public as root
   const url = `/uploads/${filename}`;
