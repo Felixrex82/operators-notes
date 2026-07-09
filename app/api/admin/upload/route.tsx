@@ -60,7 +60,9 @@ export async function POST(req: NextRequest) {
     fetch(deployHook, { method: "POST" }).catch(() => {});
   }
 
-  // Return the public URL — Next.js serves /public as root
-  const url = `/uploads/${filename}`;
+// Serve directly from GitHub's CDN instead of local public folder
+  const owner = process.env.GITHUB_OWNER;
+  const repo = process.env.GITHUB_REPO;
+  const branch = process.env.GITHUB_BRANCH || "main";
+  const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/public/uploads/${filename}`;
   return NextResponse.json({ url, filename });
-}
