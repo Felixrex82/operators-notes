@@ -7,7 +7,7 @@ const SECRET = new TextEncoder().encode(
 
 const PUBLIC_ADMIN = ["/admin", "/api/admin/login"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Only apply to /admin/* and /api/admin/*
