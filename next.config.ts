@@ -4,10 +4,9 @@ const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 
   outputFileTracingIncludes: {
-    '/**': ['./content/**/*', './public/**/*'],
+    '/**': ['./content/**/*', './public/uploads/**/*'],
   },
 
-  // Serve uploaded images with proper caching
   async headers() {
     return [
       {
