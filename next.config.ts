@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
     '/**': ['./content/**/*', './public/uploads/**/*'],
   },
 
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: '/uploads/:path*',
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
