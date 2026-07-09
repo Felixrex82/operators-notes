@@ -224,7 +224,9 @@ function EditorInner() {
     const res = await fetch(endpoint, { method, headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) });
     if (res.ok) {
       setStatus("saved");
-      setTimeout(() => router.push("/admin/edit"), 1200);
+      setTimeout(() => {
+        router.push("/admin/edit");
+      }, 8000);
     } else {
       const d = await res.json();
       setErrorMsg(d.error || "Something went wrong.");
