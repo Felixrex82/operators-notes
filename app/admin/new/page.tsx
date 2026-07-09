@@ -271,7 +271,14 @@ function EditorInner() {
         </div>
         <div style={{display:"flex",alignItems:"center",gap:"0.75rem",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
           {status==="error" && <p style={{fontSize:"0.78rem",color:"#ef4444",maxWidth:"200px",textAlign:"right"}}>{errorMsg}</p>}
-          {status==="saved" && <p style={{fontFamily:"'Geist Mono',monospace",fontSize:"0.75rem",color:"#4ade80"}}>PUBLISHED ✓</p>}
+          {status==="saved" && (
+  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"0.2rem"}}>
+    <p style={{fontFamily:"'Geist Mono',monospace",fontSize:"0.75rem",color:"#4ade80"}}>PUBLISHED ✓</p>
+    <p style={{fontFamily:"'Geist Mono',monospace",fontSize:"0.65rem",color:"var(--muted)"}}>
+      Going live in ~60 seconds — Vercel is rebuilding...
+    </p>
+  </div>
+)}
           <span style={{fontSize:"0.7rem",color:"var(--muted)",display:"none"}} className="shortcut-hint">⌘S</span>
           <button onClick={save} disabled={status==="saving"} className="btn-primary" style={{padding:"0.5rem 1.1rem",fontSize:"0.82rem"}}>
             {status==="saving" ? "Publishing..." : isEdit ? "Save changes" : "Publish"}
