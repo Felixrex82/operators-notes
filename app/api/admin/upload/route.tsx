@@ -66,3 +66,4 @@ export async function POST(req: NextRequest) {
   const branch = process.env.GITHUB_BRANCH || "main";
   const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/public/uploads/${filename}`;
   return NextResponse.json({ url, filename });
+}
