@@ -1,193 +1,33 @@
 "use client";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function NoteContent({ content }: { content: string }) {
+  const [html, setHtml] = useState("");
+
   useEffect(() => {
+    // Reading progress bar
     const bar = document.getElementById("reading-progress");
-    if (!bar) return;
-    const update = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.body.scrollHeight - window.innerHeight;
-      bar.style.width = `${docHeight > 0 ? (scrollTop / docHeight) * 100 : 0}%`;
-    };
-    window.addEventListener("scroll", update);
-    return () => window.removeEventListener("scroll", update);
-  }, []);
-
-  function renderInline(text: string): React.ReactNode[] {
-    const tokens: { start: number; end: number; node: React.ReactNode }[] = [];
-
-    const addTokens = (re: RegExp, fn: (m: RegExpExecArray) => React.ReactNode) => {
-      let m: RegExpExecArray | null;
-      const regex = new RegExp(re.source, re.flags);
-      while ((m = regex.exec(text)) !== null) {
-        if (!tokens.some(t => t.start <= m!.index && t.end >= m!.index + m![0].length)) {
-          tokens.push({ start: m.index, end: m.index + m[0].length, node: fn(m) });
-        }
-      }
-    };
-
-    addTokens(/\*\*(.+?)\*\*/g, m => (
-      <strong key={m.index} style={{ color: "var(--primary)", fontWeight: 600 }}>{m[1]}</strong>
-    ));
-
-    addTokens(/\*(.+?)\*/g, m => (
-      <em key={m.index}>{m[1]}</em>
-    ));
-
-    addTokens(/`(.+?)`/g, m => (
-      <code key={m.index} style={{
-        background: "var(--surface)",
-        color: "var(--accent)",
-        fontFamily: "'Geist Mono',monospace",
-        fontSize: "0.85em",
-        padding: "0.2em 0.4em",
-        borderRadius: "3px",
-        border: "1px solid var(--border)",
-      }}>{m[1]}</code>
-    ));
-
-    addTokens(/\[([^\]]+)\]\(([^)]+)\)/g, m => (
-      <a key={m.index} href={m[2]}
-        target={m[2].startsWith("http") ? "_blank" : undefined}
-        rel="noopener noreferrer"
-        style={{ color: "var(--accent)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
-        {m[1]}
-      </a>
-    ));
-
-    if (!tokens.length) return [text];
-    tokens.sort((a, b) => a.start - b.start);
-
-    const nodes: React.ReactNode[] = [];
-    let cursor = 0;
-    for (const t of tokens) {
-      if (t.start > cursor) nodes.push(text.slice(cursor, t.start));
-      nodes.push(t.node);
-      cursor = t.end;
+    if (bar) {
+      const update = () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        bar.style.width = `${docHeight > 0 ? (scrollTop / docHeight) * 100 : 0}%`;
+      };
+      window.addEventListener("scroll", update);
     }
-    if (cursor < text.length) nodes.push(text.slice(cursor));
-    return nodes;
-  }
 
-  const renderContent = (text: string) => {
-    const lines = text.split("\n").map(l => l.replace(/\r/g, ""));
-    const result: React.ReactElement[] = [];
-    let i = 0;
-    let key = 0;
+    // Convert markdown to HTML
+    import("marked").then(({ marked }) => {
+      marked.setOptions({ breaks: true, gfm: true } as object);
+      const result = marked.parse(content) as string;
+      setHtml(result);
+    });
 
-    while (i < lines.length) {
-      const line = lines[i];
-      const trimmed = line.trim();
-
-      const imgMatch = trimmed.match(/^!\[([^\]]*)\]\((.+)\)$/);
-      if (imgMatch) {
-        result.push(
-          <img
-            key={key++}
-            src={imgMatch[2].trim()}
-            alt={imgMatch[1] || "Image"}
-            style={{
-              maxWidth: "100%",
-              borderRadius: "6px",
-              margin: "1.5rem 0",
-              border: "1px solid var(--border)",
-              display: "block",
-            }}
-          />
-        );
-        i++;
-        continue;
-      }
-
-      if (trimmed.startsWith("## ")) {
-        result.push(
-          <h2 key={key++} style={{
-            fontSize: "1.15rem",
-            fontWeight: 600,
-            color: "var(--primary)",
-            marginTop: "2.5rem",
-            marginBottom: "1rem",
-            letterSpacing: "-0.02em",
-            borderBottom: "1px solid var(--border)",
-            paddingBottom: "0.5rem",
-          }}>
-            {trimmed.slice(3)}
-          </h2>
-        );
-        i++;
-        continue;
-      }
-
-      if (trimmed.startsWith("### ")) {
-        result.push(
-          <h3 key={key++} style={{
-            fontSize: "1rem",
-            fontWeight: 600,
-            color: "var(--primary)",
-            marginTop: "2rem",
-            marginBottom: "0.75rem",
-          }}>
-            {trimmed.slice(4)}
-          </h3>
-        );
-        i++;
-        continue;
-      }
-
-      if (trimmed.startsWith("> ")) {
-        result.push(
-          <blockquote key={key++} style={{
-            borderLeft: "2px solid var(--accent)",
-            paddingLeft: "1.25rem",
-            color: "var(--muted)",
-            fontStyle: "italic",
-            margin: "1.5rem 0",
-          }}>
-            <p style={{ margin: 0, lineHeight: 1.7 }}>{trimmed.slice(2)}</p>
-          </blockquote>
-        );
-        i++;
-        continue;
-      }
-
-      if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-        const items: string[] = [];
-        while (i < lines.length && (lines[i].trim().startsWith("- ") || lines[i].trim().startsWith("* "))) {
-          items.push(lines[i].trim().slice(2));
-          i++;
-        }
-        result.push(
-          <ul key={key++} style={{ paddingLeft: "1.5rem", marginBottom: "1.5rem", color: "var(--secondary)" }}>
-            {items.map((item, j) => (
-              <li key={j} style={{ marginBottom: "0.5rem", lineHeight: 1.7, fontSize: "0.95rem" }}>
-                {renderInline(item)}
-              </li>
-            ))}
-          </ul>
-        );
-        continue;
-      }
-
-      if (!trimmed) {
-        i++;
-        continue;
-      }
-
-      result.push(
-        <p key={key++} style={{
-          fontSize: "0.95rem",
-          color: "var(--secondary)",
-          marginBottom: "1.25rem",
-          lineHeight: 1.8,
-        }}>
-          {renderInline(trimmed)}
-        </p>
-      );
-      i++;
-    }
-    return result;
-  };
+    return () => {
+      const bar = document.getElementById("reading-progress");
+      if (bar) window.removeEventListener("scroll", () => {});
+    };
+  }, [content]);
 
   return (
     <>
@@ -204,7 +44,102 @@ export default function NoteContent({ content }: { content: string }) {
           width: "0%",
         }}
       />
-      <div>{renderContent(content)}</div>
+      <div
+        className="note-prose"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+      <style>{`
+        .note-prose p {
+          font-size: 0.95rem;
+          color: var(--secondary);
+          margin-bottom: 1.25rem;
+          line-height: 1.8;
+        }
+        .note-prose h2 {
+          font-size: 1.15rem;
+          font-weight: 600;
+          color: var(--primary);
+          margin-top: 2.5rem;
+          margin-bottom: 1rem;
+          letter-spacing: -0.02em;
+          border-bottom: 1px solid var(--border);
+          padding-bottom: 0.5rem;
+        }
+        .note-prose h3 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--primary);
+          margin-top: 2rem;
+          margin-bottom: 0.75rem;
+        }
+        .note-prose ul {
+          padding-left: 1.5rem;
+          margin-bottom: 1.5rem;
+          color: var(--secondary);
+        }
+        .note-prose li {
+          margin-bottom: 0.5rem;
+          line-height: 1.7;
+          font-size: 0.95rem;
+        }
+        .note-prose blockquote {
+          border-left: 2px solid var(--accent);
+          padding-left: 1.25rem;
+          color: var(--muted);
+          font-style: italic;
+          margin: 1.5rem 0;
+        }
+        .note-prose blockquote p {
+          margin: 0;
+        }
+        .note-prose strong {
+          color: var(--primary);
+          font-weight: 600;
+        }
+        .note-prose em {
+          font-style: italic;
+        }
+        .note-prose code {
+          background: var(--surface);
+          color: var(--accent);
+          font-family: 'Geist Mono', monospace;
+          font-size: 0.85em;
+          padding: 0.2em 0.4em;
+          border-radius: 3px;
+          border: 1px solid var(--border);
+        }
+        .note-prose pre {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 6px;
+          padding: 1.25rem;
+          overflow-x: auto;
+          margin-bottom: 1.5rem;
+        }
+        .note-prose pre code {
+          background: none;
+          border: none;
+          padding: 0;
+          font-size: 0.88rem;
+        }
+        .note-prose a {
+          color: var(--accent);
+          text-decoration: underline;
+          text-underline-offset: 3px;
+        }
+        .note-prose img {
+          max-width: 100%;
+          border-radius: 6px;
+          margin: 1.5rem 0;
+          border: 1px solid var(--border);
+          display: block;
+        }
+        .note-prose hr {
+          border: none;
+          border-top: 1px solid var(--border);
+          margin: 2rem 0;
+        }
+      `}</style>
     </>
   );
 }
