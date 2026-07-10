@@ -136,7 +136,7 @@ export default function NoteContent({ content }: { content: string }) {
   }
 
   const renderContent = (text: string) => {
-    const lines = text.split("\n");
+    const lines = text.split("\n").map(l => l.replace(/\r/g, ""));
     const result: React.ReactElement[] = [];
     let i = 0;
     let key = 0;
