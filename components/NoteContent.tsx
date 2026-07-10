@@ -153,6 +153,59 @@ export default function NoteContent({ content }: { content: string }) {
       <div>{renderContent(content)}</div>
     </>
   );
+}        continue;
+      }
+
+      // Paragraph
+      result.push(
+        <p key={key++} style={{ fontSize: "0.95rem", color: "var(--secondary)", marginBottom: "1.25rem", lineHeight: 1.8 }}>
+          {renderInline(trimmed)}
+        </p>
+      );
+      i++;
+    }
+    return result;
+  };
+
+  function renderInline(text: string): React.ReactNode[] {
+    const tokens: { start: number; end: number; node: React.ReactNode }[] = [];
+    const patterns = [
+      { re: /!\[([^\]]*)\]\((.+?)\)/g, fn: (m: RegExpExecArray) => <img key={m.index} src={m[2]} alt={m[1]} style={{ maxWidth: "100%", borderRadius: "4px", margin: "0.5rem 0", display: "block" }} /> },
+      { re: /\[([^\]]+)\]\(([^)]+)\)/g, fn: (m: RegExpExecArray) => <a key={m.index} href={m[2]} target={m[2].startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" style={{ color: "var(--accent)", textDecoration: "underline", textUnderlineOffset: "3px" }}>{m[1]}</a> },
+      { re: /\*\*(.+?)\*\*/g, fn: (m: RegExpExecArray) => <strong key={m.index} style={{ color: "var(--primary)", fontWeight: 600 }}>{m[1]}</strong> },
+      { re: /\*(.+?)\*/g, fn: (m: RegExpExecArray) => <em key={m.index}>{m[1]}</em> },
+      { re: /`(.+?)`/g, fn: (m: RegExpExecArray) => <code key={m.index} style={{ background: "var(--surface)", color: "var(--accent)", fontFamily: "'Geist Mono',monospace", fontSize: "0.85em", padding: "0.2em 0.4em", borderRadius: "3px", border: "1px solid var(--border)" }}>{m[1]}</code> },
+    ];
+
+    for (const { re, fn } of patterns) {
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(text)) !== null) {
+        if (!tokens.some(t => t.start <= m!.index && t.end >= m!.index)) {
+          tokens.push({ start: m.index, end: m.index + m[0].length, node: fn(m) });
+        }
+      }
+    }
+
+    if (!tokens.length) return [text];
+    tokens.sort((a, b) => a.start - b.start);
+
+    const nodes: React.ReactNode[] = [];
+    let cursor = 0;
+    for (const t of tokens) {
+      if (t.start > cursor) nodes.push(text.slice(cursor, t.start));
+      nodes.push(t.node);
+      cursor = t.end;
+    }
+    if (cursor < text.length) nodes.push(text.slice(cursor));
+    return nodes;
+  }
+
+  return (
+    <>
+      <div id="reading-progress" style={{ position: "fixed", top: 0, left: 0, height: "1px", background: "var(--accent)", zIndex: 100, transition: "width 0.1s linear", width: "0%" }} />
+      <div>{renderContent(content)}</div>
+    </>
+  );
 }            background: "var(--surface)", color: "var(--accent)",
             fontFamily: "'Geist Mono',monospace", fontSize: "0.85em",
             padding: "0.2em 0.4em", borderRadius: "3px",
