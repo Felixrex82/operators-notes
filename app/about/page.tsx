@@ -312,7 +312,7 @@ export default function AboutPage() {
                 { label: "Building", value: "MEADNET and CALMLEDGER" },
                 { label: "Writing", value: "Notes on attention markets, Web3 infrastructure, and startup operations" },
                 { label: "Studying", value: "Decentralized identity, AI infrastructure, and B2B growth systems" },
-                { label: "Based in", value: "Lagos, Nigeria" },
+                { label: "Based in", value: "Ilorin, Kwara State, Nigeria" },
               ].map(item => (
                 <div key={item.label} style={{ display: "flex", gap: "1.5rem", alignItems: "baseline", flexWrap: "wrap" }}>
                   <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: "0.7rem", color: "var(--muted)", minWidth: "70px", flexShrink: 0 }}>
