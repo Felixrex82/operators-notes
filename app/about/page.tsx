@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 const experience = [
@@ -123,10 +125,10 @@ const interests = [
   { area: "Emerging Technology", detail: "AI, decentralized systems, and what infrastructure shifts unlock." },
 ];
 
-export const metadata = {
-  title: "About",
-  description: "Awodele Felix — blockchain enthusiast, startup operator, day trader, product thinker, and community builder.",
-};
+// export const metadata = {
+//   title: "About",
+//   description: "Awodele Felix — blockchain enthusiast, startup operator, day trader, product thinker, and community builder.",
+// };
 
 export default function AboutPage() {
   return (
